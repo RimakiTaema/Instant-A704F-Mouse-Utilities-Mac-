@@ -62,9 +62,14 @@ jobs:
           lipo -archs macos/target/aarch64-apple-darwin/release/a704f-macos | grep -qw arm64
           lipo -archs macos/gui/build/a704f-configurator.app/Contents/MacOS/a704f-configurator | grep -qw arm64
 
+      - name: Stage app bundle
+        run: |
+          mkdir -p macos/gui/artifacts
+          ditto macos/gui/build/a704f-configurator.app macos/gui/artifacts/a704f-configurator.app
+
       - name: Upload unsigned Apple Silicon app
         uses: actions/upload-artifact@v4
         with:
           name: a704f-configurator-macos-arm64
-          path: macos/gui/build/a704f-configurator.app
+          path: macos/gui/artifacts
           if-no-files-found: error

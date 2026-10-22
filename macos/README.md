@@ -36,6 +36,12 @@ The native device and input runtime is macOS-only. Linux is supported for protoc
 
 Rust is required for the backend CLI. CMake and Qt 6 are additionally required for the GUI; the GUI invokes the CLI rather than implementing HID itself. CLI-only users do not need CMake or Qt. The [macOS Apple Silicon workflow](../.github/workflows/macos-arm64.yml) builds both and uploads an unsigned `.app` artifact.
 
+### Downloading the app from GitHub Actions
+
+The Actions artifact download is a ZIP archive, not an `.app` file. Download the `a704f-configurator-macos-arm64` artifact from a successful workflow run and extract the ZIP with Finder. The extracted `a704f-configurator.app` is the app to open; do not rename the downloaded ZIP to `.app`. If it was already renamed, change its extension back to `.zip` and extract it.
+
+This build is unsigned. If macOS warns that it cannot verify the developer, only if you trust the build, Control-click the extracted app, choose **Open**, then confirm **Open** in the dialog. The workflow currently builds Apple Silicon (`arm64`) only.
+
 ## Qt 6 GUI
 
 The GUI requires Qt 6.2 or later, CMake 3.21 or later, Rust stable, and Xcode Command Line Tools. With Homebrew Qt installed:
