@@ -1,6 +1,6 @@
 # A704F macOS CLI
 
-This is a native Rust CLI for Apple Silicon Macs. It keeps HID protocol encoding, device transport, and host-side macro execution in separate modules. There is no GUI in this first version.
+This is a native Rust CLI for Apple Silicon Macs, with an optional Qt 6 Widgets frontend in `gui/`. The GUI invokes the CLI for all HID and macro operations; it does not implement a second protocol transport.
 
 ## Verified Protocol Boundary
 
@@ -33,6 +33,23 @@ cargo build --release
 ```
 
 The native device and input runtime is macOS-only. Linux is supported for protocol, configuration, mock-transport, and macro-engine tests; `device inspect`, hardware writes, and event injection intentionally return a platform error there.
+
+Rust is required for the backend CLI. CMake and Qt 6 are additionally required for the GUI; the GUI invokes the CLI rather than implementing HID itself. CLI-only users do not need CMake or Qt. The [macOS Apple Silicon workflow](../.github/workflows/macos-arm64.yml) builds both and uploads an unsigned `.app` artifact.
+
+## Qt 6 GUI
+
+The GUI requires Qt 6.2 or later, CMake 3.21 or later, Rust stable, and Xcode Command Line Tools. With Homebrew Qt installed:
+
+```sh
+brew install qt cmake
+cd macos
+cargo build --release
+cmake -S gui -B gui/build -DCMAKE_PREFIX_PATH="$(brew --prefix qt)"
+cmake --build gui/build --config Release
+open gui/build/a704f-configurator.app
+```
+
+The CMake target bundles the release CLI when it exists at `macos/target/release/a704f-macos`. The GUI also allows selecting the CLI executable manually or setting `A704F_CLI_PATH`. To prepare a Qt deployment bundle, run `$(brew --prefix qt)/bin/macdeployqt gui/build/a704f-configurator.app` after building. The GUI supports read-only device inspection, settings import/export/preview, explicit-confirmation apply, and host macro import/export/validation/run/stop. Macro execution requires the same macOS permissions described below.
 
 ## Commands
 
