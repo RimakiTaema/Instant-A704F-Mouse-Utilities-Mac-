@@ -77,3 +77,4 @@ CMakeLists.txt.user*
 /script/pkg
 
 build/*
+macos/target/

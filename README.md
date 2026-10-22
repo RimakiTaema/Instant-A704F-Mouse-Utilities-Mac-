@@ -58,3 +58,7 @@ make install
 
 ## License
 This project is licensed under the MIT License.
+
+## macOS CLI
+
+A Rust-based macOS CLI for Apple Silicon is in [macos/README.md](macos/README.md). It includes read-only device inspection, validated settings dry runs, explicit opt-in hardware writes, and host-side timed macros. The native HID and input paths require validation on a Mac with the actual `18f8:1286` mouse; no physical-device compatibility is claimed yet.
