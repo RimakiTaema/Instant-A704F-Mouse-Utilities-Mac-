@@ -91,7 +91,11 @@ FetchContent_Declare(
 
 
 FetchContent_MakeAvailable(hidapi)
-target_link_libraries(A704F_Mouse PUBLIC hidapi::hidapi)
+target_link_libraries(A704F_Mouse
+    PRIVATE
+        hidapi::include
+        hidapi::hidapi
+)
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     install(TARGETS A704F_Mouse DESTINATION usr/local/bin)

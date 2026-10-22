@@ -2,7 +2,7 @@
 #include "hidhelper.h"
 #include "data.cpp"
 #include <QThread>
-#include <hidapi/hidapi.h>
+#include <hidapi.h>
 #include <unistd.h>
 
 MouseInputHandler::MouseInputHandler(MouseSettings *mouseSettings)

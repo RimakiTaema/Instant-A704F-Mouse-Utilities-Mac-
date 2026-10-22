@@ -3,7 +3,7 @@
 #include "custominputhandler.h"
 #include "ui_mainwindow.h"
 #include "hidhelper.h"
-#include <hidapi/hidapi.h>
+#include <hidapi.h>
 #include <QMessageBox>
 #include <QTimer>
 #include <QThread>

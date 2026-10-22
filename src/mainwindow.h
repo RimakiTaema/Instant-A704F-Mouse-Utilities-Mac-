@@ -4,7 +4,7 @@
 #include "rgbpreview.h"
 #include "mousesettings.h"
 #include <QMainWindow>
-#include <hidapi/hidapi.h>
+#include <hidapi.h>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }

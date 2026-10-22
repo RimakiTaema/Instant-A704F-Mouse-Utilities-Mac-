@@ -3,7 +3,7 @@
 
 #include "mousesettings.h"
 #include <QThread>
-#include <hidapi/hidapi.h>
+#include <hidapi.h>
 
 
 class MouseInputHandler : public QObject
