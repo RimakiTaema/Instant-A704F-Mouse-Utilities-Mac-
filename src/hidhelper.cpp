@@ -3,6 +3,9 @@
 #include <QApplication>
 #include <QMessageBox>
 #include <QString>
+#ifdef Q_OS_MACOS
+#include <hidapi_darwin.h>
+#endif
 #ifdef Q_OS_LINUX
 #include <QFile>
 #include <unistd.h>
@@ -11,6 +14,14 @@
 #endif
 
 hid_device_* HIDHelper::openMouseInterface(QWidget *parent) {
+#ifdef Q_OS_MACOS
+    if (hid_init() < 0) {
+        qCritical() << "HIDAPI initialization failed";
+        return nullptr;
+    }
+    hid_darwin_set_open_exclusive(0);
+#endif
+
     hid_device *handle;
 
     for(VendorProductID vpid : supportedDevices) {
@@ -55,6 +66,14 @@ hid_device_* HIDHelper::openMouseInterface(QWidget *parent) {
 }
 
 hid_device_* HIDHelper::openKeyboardInterface() {
+#ifdef Q_OS_MACOS
+    if (hid_init() < 0) {
+        qCritical() << "HIDAPI initialization failed";
+        return nullptr;
+    }
+    hid_darwin_set_open_exclusive(0);
+#endif
+
     hid_device_info *infos;
     for(VendorProductID vpid : supportedDevices) {
         infos = hid_enumerate(vpid.vendorId, vpid.productId);
