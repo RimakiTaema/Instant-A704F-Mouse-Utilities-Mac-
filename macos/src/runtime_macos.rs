@@ -101,6 +101,8 @@ pub fn run(macro_file: MacroFile, stop_key: String) -> Result<(), String> {
     thread::Builder::new()
         .name("a704f-input-listener".to_owned())
         .spawn(move || {
+            let listener_stopping_on_error = Arc::clone(&listener_stopping);
+            let listener_cancelled_on_error = Arc::clone(&listener_cancelled);
             let result = listen(move |event| {
                 if listener_stopping.load(Ordering::Relaxed) {
                     return;
@@ -145,8 +147,8 @@ pub fn run(macro_file: MacroFile, stop_key: String) -> Result<(), String> {
             if let Err(error) = result {
                 *listener_error_slot.lock().unwrap() =
                     Some(format!("input listener failed: {error:?}"));
-                listener_cancelled.store(true, Ordering::Relaxed);
-                listener_stopping.store(true, Ordering::Relaxed);
+                listener_cancelled_on_error.store(true, Ordering::Relaxed);
+                listener_stopping_on_error.store(true, Ordering::Relaxed);
             }
         })
         .map_err(|error| format!("cannot start input listener: {error}"))?;
