@@ -17,59 +17,36 @@ jobs:
       - name: Check out source
         uses: actions/checkout@v4
 
-      - name: Set up Rust
-        uses: dtolnay/rust-toolchain@stable
-        with:
-          targets: aarch64-apple-darwin
-          components: rustfmt, clippy
-
       - name: Install Qt 6 and CMake
         run: brew install qt cmake
 
-      - name: Check Rust formatting
-        working-directory: macos
-        run: cargo fmt --check
-
-      - name: Lint Rust
-        working-directory: macos
-        run: cargo clippy --all-targets -- -D warnings
-
-      - name: Test Rust core
-        working-directory: macos
-        run: cargo test
-
-      - name: Build Apple Silicon CLI
-        working-directory: macos
-        run: cargo build --release --target aarch64-apple-darwin
-
-      - name: Configure Qt GUI
+      - name: Configure Qt app
         run: >-
-          cmake -S macos/gui -B macos/gui/build
+          cmake -S . -B build
           -DCMAKE_BUILD_TYPE=Release
           -DCMAKE_OSX_ARCHITECTURES=arm64
           -DCMAKE_PREFIX_PATH="$(brew --prefix qt)"
-          -DA704F_CLI_EXECUTABLE="${{ github.workspace }}/macos/target/aarch64-apple-darwin/release/a704f-macos"
 
-      - name: Build Qt GUI
-        run: cmake --build macos/gui/build --config Release --parallel
+      - name: Build Qt app
+        run: cmake --build build --config Release --parallel
 
       - name: Bundle Qt frameworks
-        run: "$(brew --prefix qt)/bin/macdeployqt macos/gui/build/a704f-configurator.app"
+        run: "$(brew --prefix qt)/bin/macdeployqt build/A704F_Mouse.app"
 
-      - name: Verify Apple Silicon binaries
+      - name: Verify Apple Silicon app
         run: |
           test "$(uname -m)" = arm64
-          lipo -archs macos/target/aarch64-apple-darwin/release/a704f-macos | grep -qw arm64
-          lipo -archs macos/gui/build/a704f-configurator.app/Contents/MacOS/a704f-configurator | grep -qw arm64
+          test -d build/A704F_Mouse.app/Contents/Frameworks
+          lipo -archs build/A704F_Mouse.app/Contents/MacOS/A704F_Mouse | grep -qw arm64
 
       - name: Stage app bundle
         run: |
-          mkdir -p macos/gui/artifacts
-          ditto macos/gui/build/a704f-configurator.app macos/gui/artifacts/a704f-configurator.app
+          mkdir -p build/artifacts
+          ditto build/A704F_Mouse.app build/artifacts/A704F_Mouse.app
 
-      - name: Upload unsigned Apple Silicon app
+      - name: Upload unsigned macOS Qt app
         uses: actions/upload-artifact@v7
         with:
-          name: a704f-configurator-macos-arm64
-          path: macos/gui/artifacts
+          name: A704F-Mouse-macOS-arm64
+          path: build/artifacts
           if-no-files-found: error

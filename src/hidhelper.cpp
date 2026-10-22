@@ -3,10 +3,12 @@
 #include <QApplication>
 #include <QMessageBox>
 #include <QString>
+#ifdef Q_OS_LINUX
 #include <QFile>
 #include <unistd.h>
 
 #define UDEV_RULES "51-a704f-usb-gaming-mouse.rules"
+#endif
 
 hid_device_* HIDHelper::openMouseInterface(QWidget *parent) {
     hid_device *handle;
@@ -18,9 +20,14 @@ hid_device_* HIDHelper::openMouseInterface(QWidget *parent) {
 
     if(!handle) {
         qCritical("Cannot find device with the designated Vendor/Product ID");
+#ifdef Q_OS_MACOS
+        QMessageBox::critical(parent, "Error", QString("Cannot find the corresponding device. Check that the mouse is connected and accessible to this Mac."));
+#else
         QMessageBox::critical(parent, "Error", QString("Cannot find the corresponding device.\nIf the device is plugged in, it is likely you need to run this program under root.\nThe program will then prompt you to install an udev rules so you do not have to elevate the application again in the future."));
+#endif
     }
 
+#ifdef Q_OS_LINUX
     if(geteuid() == 0) { // Root UID
         QMessageBox::StandardButton response = QMessageBox::question(parent, "Running under root permission", "You are running this program under root permission. You can avoid that by installing a udev rules.\n\nAfter the installation, you can re-plug your mouse or restart your computer, then you should be able to use the program under normal user account.\n\nDo you want to install it?", QMessageBox::Yes|QMessageBox::No);
         if(response == QMessageBox::StandardButton::Yes) {
@@ -31,6 +38,7 @@ hid_device_* HIDHelper::openMouseInterface(QWidget *parent) {
             qDebug() << "udev rules installed at " << destinatedPath;
         }
     }
+#endif
 
     return handle;
 }

@@ -59,6 +59,6 @@ make install
 ## License
 This project is licensed under the MIT License.
 
-## macOS Utility
+## macOS
 
-A Rust-based macOS CLI and optional Qt 6 GUI for Apple Silicon are in [macos/README.md](macos/README.md). They include read-only device inspection, validated settings dry runs, explicit opt-in hardware writes, and host-side timed macros. The native HID and input paths require validation on a Mac with the actual `18f8:1286` mouse; no physical-device compatibility is claimed yet.
+The Qt application can be built for Apple Silicon using the [macOS workflow](.github/workflows/macos-arm64.yml). Download the `A704F-Mouse-macOS-arm64` artifact from a successful workflow run and extract the ZIP archive in Finder; open the extracted `A704F_Mouse.app` rather than renaming the ZIP file. The app is unsigned, so if macOS blocks it, Control-click the app, choose **Open**, and confirm only if you trust the build. This workflow builds ARM64 only.

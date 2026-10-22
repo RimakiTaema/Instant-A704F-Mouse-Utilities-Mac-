@@ -64,7 +64,7 @@ endif()
 target_link_libraries(A704F_Mouse PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
 
 set_target_properties(A704F_Mouse PROPERTIES
-    MACOSX_BUNDLE_GUI_IDENTIFIER my.example.com
+    MACOSX_BUNDLE_GUI_IDENTIFIER com.amberfrost.a704fmouseutilities
     MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
     MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
     MACOSX_BUNDLE TRUE
@@ -93,39 +93,31 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(hidapi)
 target_link_libraries(A704F_Mouse PUBLIC hidapi::hidapi)
 
-# set(CMAKE_INSTALL_PREFIX /)
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    install(TARGETS A704F_Mouse DESTINATION usr/local/bin)
+    install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/51-a704f-usb-gaming-mouse.rules DESTINATION etc/udev/rules.d)
+    install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/img/tray.png RENAME a704f-mouse.png DESTINATION usr/share/pixmaps)
+    install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/a704f-mouse.desktop DESTINATION usr/share/applications)
 
-install(TARGETS A704F_Mouse DESTINATION usr/local/bin)
-install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/51-a704f-usb-gaming-mouse.rules DESTINATION etc/udev/rules.d)
-install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/img/tray.png RENAME a704f-mouse.png DESTINATION usr/share/pixmaps)
-install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/a704f-mouse.desktop DESTINATION usr/share/applications)
+    set(CPACK_GENERATOR "DEB")
+    set(CPACK_DEBIAN_FILE_NAME DEB-DEFAULT)
+    set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE amd64)
 
-set(CPACK_GENERATOR "DEB")
-set(CPACK_DEBIAN_FILE_NAME DEB-DEFAULT)
-set(CPACK_DEBIAN_PACKAGE_ARCHITECTURE amd64)
+    # Uncomment these lines to enable shlibs for this project
+    # set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
+    # set(CPACK_DEBIAN_PACKAGE_GENERATE_SHLIBS ON)
 
-# Uncomment this lines to enable shlibs for this project
-# set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
-# set(CPACK_DEBIAN_PACKAGE_GENERATE_SHLIBS ON)
+    set(CPACK_DEBIAN_PACKAGE_NAME "instant-a704f-mouse-utilities")
+    set(CPACK_DEBIAN_PACKAGE_VERSION ${CMAKE_PROJECT_VERSION})
+    set(CPACK_DEBIAN_PACKAGE_RELEASE 1)
 
-set(CPACK_DEBIAN_PACKAGE_NAME "instant-a704f-mouse-utilities")
+    set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Mouse utility for Instant A704/A704F mouse chipset.")
+    set(CPACK_PACKAGE_DESCRIPTION
+        "This is an unofficial program that can be used to configure the A704/A704F Mouse by Instant Microelectronics.")
+    set(CPACK_DEBIAN_PACKAGE_MAINTAINER "${PROGRAM_AUTHOR} <${PROGRAM_AUTHOR_EMAIL}>")
+    set(CPACK_DEBIAN_PACKAGE_HOMEPAGE PROGRAM_SRC_URL)
+    set(CPACK_DEBIAN_PACKAGE_DEPENDS "qt6-base-dev")
+    set(CPACK_DEBIAN_PACKAGE_CONTROL_EXTRA ${CMAKE_CURRENT_SOURCE_DIR}/script/postinst)
 
-set(CPACK_DEBIAN_PACKAGE_VERSION ${CMAKE_PROJECT_VERSION})
-set(CPACK_DEBIAN_PACKAGE_RELEASE 1)
-
-# Uncomment this lines to use timestamp for the Debian release number
-# string(TIMESTAMP NOW "%s")
-# set(CPACK_DEBIAN_PACKAGE_RELEASE ${NOW})
-
-set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Mouse utility for Instant A704/A704F mouse chipset.")
-
-set(CPACK_PACKAGE_DESCRIPTION
-"This is an unofficial program that can be used to configure the A704/A704F Mouse by Instant Microelectronics.")
-
-set(CPACK_DEBIAN_PACKAGE_MAINTAINER "${PROGRAM_AUTHOR} <${PROGRAM_AUTHOR_EMAIL}>")
-set(CPACK_DEBIAN_PACKAGE_HOMEPAGE PROGRAM_SRC_URL)
-
-set(CPACK_DEBIAN_PACKAGE_DEPENDS "qt6-base-dev")
-set(CPACK_DEBIAN_PACKAGE_CONTROL_EXTRA ${CMAKE_CURRENT_SOURCE_DIR}/script/postinst)
-
-include(CPack)
+    include(CPack)
+endif()
