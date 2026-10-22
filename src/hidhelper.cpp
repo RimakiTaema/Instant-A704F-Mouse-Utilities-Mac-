@@ -14,8 +14,19 @@ hid_device_* HIDHelper::openMouseInterface(QWidget *parent) {
     hid_device *handle;
 
     for(VendorProductID vpid : supportedDevices) {
+        qDebug() << "Trying HID device:"
+                 << Qt::hex << vpid.vendorId
+                 << Qt::hex << vpid.productId;
+
         handle = hid_open(vpid.vendorId, vpid.productId, NULL);
-        if(handle) break;
+
+        if(handle) {
+            qDebug() << "HID device opened successfully";
+            break;
+        }
+
+        qWarning() << "hid_open failed:"
+                   << QString::fromWCharArray(hid_error(nullptr));
     }
 
     if(!handle) {
